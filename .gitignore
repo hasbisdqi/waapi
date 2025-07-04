@@ -98,6 +98,7 @@ temp/
 # WhatsApp session data
 sessions/
 uploads/
+temp/
 
 # Build output
 dist/

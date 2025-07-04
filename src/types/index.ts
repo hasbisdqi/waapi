@@ -22,6 +22,7 @@ export interface MessageData {
   timestamp: Date;
   type: string;
   sessionId: string;
+  mediaUrl?: string;
 }
 
 export interface SendMessageRequest {

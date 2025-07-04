@@ -14,6 +14,7 @@ import fs from 'fs';
 import { v4 as uuidv4 } from 'uuid';
 import axios from 'axios';
 import { SessionInfo, WebhookConfig, MessageData } from '../types';
+import { MediaUtils } from '../utils/MediaUtils';
 
 export class WhatsAppManager {
   private sessions: Map<string, WASocket> = new Map();
@@ -27,7 +28,7 @@ export class WhatsAppManager {
   }
 
   private ensureDirectories() {
-    const dirs = ['./sessions', './uploads'];
+    const dirs = ['./sessions', './uploads', './temp'];
     dirs.forEach(dir => {
       if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir, { recursive: true });
@@ -130,11 +131,15 @@ export class WhatsAppManager {
   private async handleIncomingMessages(sessionId: string, messageUpdate: any) {
     const { messages } = messageUpdate;
     const sessionInfo = this.sessionInfos.get(sessionId);
+    const socket = this.sessions.get(sessionId);
     
-    if (!sessionInfo) return;
+    if (!sessionInfo || !socket) return;
 
     for (const message of messages) {
       if (message.key && message.key.fromMe) continue; // Skip own messages
+      
+      // Download media if present
+      const mediaUrl = await MediaUtils.downloadMedia(socket, message);
       
       const messageData: MessageData = {
         id: uuidv4(),
@@ -143,7 +148,8 @@ export class WhatsAppManager {
         message: message.message,
         timestamp: new Date(),
         type: Object.keys(message.message || {})[0] || 'unknown',
-        sessionId
+        sessionId,
+        mediaUrl: mediaUrl || undefined // Convert null to undefined
       };
 
       // Update message count

@@ -4,6 +4,7 @@ import path from 'path';
 import fs from 'fs';
 import { WhatsAppManager } from '../services/WhatsAppManager';
 import { SendMessageRequest } from '../types';
+import { MediaUtils } from '../utils/MediaUtils';
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
@@ -226,16 +227,35 @@ export class MessageController {
         });
       }
 
-      const imageBuffer = fs.readFileSync(file.path);
+      // Move file to temp directory and create URL
+      const tempDir = path.join(process.cwd(), 'temp');
+      if (!fs.existsSync(tempDir)) {
+        fs.mkdirSync(tempDir, { recursive: true });
+      }
+
+      const tempFilename = `${Date.now()}-${file.originalname}`;
+      const tempFilePath = path.join(tempDir, tempFilename);
+      fs.renameSync(file.path, tempFilePath);
+
+      const mediaUrl = `${process.env.MEDIA_BASE_URL || 'http://localhost:3000'}/temp/${tempFilename}`;
+      
       const messageContent = {
-        image: imageBuffer,
+        image: { url: mediaUrl },
         caption: caption || ''
       };
 
       const result = await this.whatsappManager.sendMessage(sessionId, to, messageContent);
 
-      // Clean up uploaded file
-      fs.unlinkSync(file.path);
+      // Schedule file deletion after 3 minutes
+      setTimeout(() => {
+        try {
+          if (fs.existsSync(tempFilePath)) {
+            fs.unlinkSync(tempFilePath);
+          }
+        } catch (error) {
+          console.error('Error deleting temp file:', error);
+        }
+      }, 3 * 60 * 1000);
 
       res.json({
         success: true,
@@ -272,17 +292,36 @@ export class MessageController {
         });
       }
 
-      const documentBuffer = fs.readFileSync(file.path);
+      // Move file to temp directory and create URL
+      const tempDir = path.join(process.cwd(), 'temp');
+      if (!fs.existsSync(tempDir)) {
+        fs.mkdirSync(tempDir, { recursive: true });
+      }
+
+      const tempFilename = `${Date.now()}-${file.originalname}`;
+      const tempFilePath = path.join(tempDir, tempFilename);
+      fs.renameSync(file.path, tempFilePath);
+
+      const mediaUrl = `${process.env.MEDIA_BASE_URL || 'http://localhost:3000'}/temp/${tempFilename}`;
+      
       const messageContent = {
-        document: documentBuffer,
+        document: { url: mediaUrl },
         fileName: file.originalname,
         mimetype: file.mimetype
       };
 
       const result = await this.whatsappManager.sendMessage(sessionId, to, messageContent);
 
-      // Clean up uploaded file
-      fs.unlinkSync(file.path);
+      // Schedule file deletion after 3 minutes
+      setTimeout(() => {
+        try {
+          if (fs.existsSync(tempFilePath)) {
+            fs.unlinkSync(tempFilePath);
+          }
+        } catch (error) {
+          console.error('Error deleting temp file:', error);
+        }
+      }, 3 * 60 * 1000);
 
       res.json({
         success: true,
@@ -319,13 +358,32 @@ export class MessageController {
         });
       }
 
-      const audioBuffer = fs.readFileSync(file.path);
-      const messageContent = { audio: audioBuffer };
+      // Move file to temp directory and create URL
+      const tempDir = path.join(process.cwd(), 'temp');
+      if (!fs.existsSync(tempDir)) {
+        fs.mkdirSync(tempDir, { recursive: true });
+      }
+
+      const tempFilename = `${Date.now()}-${file.originalname}`;
+      const tempFilePath = path.join(tempDir, tempFilename);
+      fs.renameSync(file.path, tempFilePath);
+
+      const mediaUrl = `${process.env.MEDIA_BASE_URL || 'http://localhost:3000'}/temp/${tempFilename}`;
+      
+      const messageContent = { audio: { url: mediaUrl } };
 
       const result = await this.whatsappManager.sendMessage(sessionId, to, messageContent);
 
-      // Clean up uploaded file
-      fs.unlinkSync(file.path);
+      // Schedule file deletion after 3 minutes
+      setTimeout(() => {
+        try {
+          if (fs.existsSync(tempFilePath)) {
+            fs.unlinkSync(tempFilePath);
+          }
+        } catch (error) {
+          console.error('Error deleting temp file:', error);
+        }
+      }, 3 * 60 * 1000);
 
       res.json({
         success: true,
@@ -362,16 +420,35 @@ export class MessageController {
         });
       }
 
-      const videoBuffer = fs.readFileSync(file.path);
+      // Move file to temp directory and create URL
+      const tempDir = path.join(process.cwd(), 'temp');
+      if (!fs.existsSync(tempDir)) {
+        fs.mkdirSync(tempDir, { recursive: true });
+      }
+
+      const tempFilename = `${Date.now()}-${file.originalname}`;
+      const tempFilePath = path.join(tempDir, tempFilename);
+      fs.renameSync(file.path, tempFilePath);
+
+      const mediaUrl = `${process.env.MEDIA_BASE_URL || 'http://localhost:3000'}/temp/${tempFilename}`;
+      
       const messageContent = {
-        video: videoBuffer,
+        video: { url: mediaUrl },
         caption: caption || ''
       };
 
       const result = await this.whatsappManager.sendMessage(sessionId, to, messageContent);
 
-      // Clean up uploaded file
-      fs.unlinkSync(file.path);
+      // Schedule file deletion after 3 minutes
+      setTimeout(() => {
+        try {
+          if (fs.existsSync(tempFilePath)) {
+            fs.unlinkSync(tempFilePath);
+          }
+        } catch (error) {
+          console.error('Error deleting temp file:', error);
+        }
+      }, 3 * 60 * 1000);
 
       res.json({
         success: true,
@@ -408,13 +485,32 @@ export class MessageController {
         });
       }
 
-      const stickerBuffer = fs.readFileSync(file.path);
-      const messageContent = { sticker: stickerBuffer };
+      // Move file to temp directory and create URL
+      const tempDir = path.join(process.cwd(), 'temp');
+      if (!fs.existsSync(tempDir)) {
+        fs.mkdirSync(tempDir, { recursive: true });
+      }
+
+      const tempFilename = `${Date.now()}-${file.originalname}`;
+      const tempFilePath = path.join(tempDir, tempFilename);
+      fs.renameSync(file.path, tempFilePath);
+
+      const mediaUrl = `${process.env.MEDIA_BASE_URL || 'http://localhost:3000'}/temp/${tempFilename}`;
+      
+      const messageContent = { sticker: { url: mediaUrl } };
 
       const result = await this.whatsappManager.sendMessage(sessionId, to, messageContent);
 
-      // Clean up uploaded file
-      fs.unlinkSync(file.path);
+      // Schedule file deletion after 3 minutes
+      setTimeout(() => {
+        try {
+          if (fs.existsSync(tempFilePath)) {
+            fs.unlinkSync(tempFilePath);
+          }
+        } catch (error) {
+          console.error('Error deleting temp file:', error);
+        }
+      }, 3 * 60 * 1000);
 
       res.json({
         success: true,

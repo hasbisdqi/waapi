@@ -22,6 +22,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+app.use('/temp', express.static(path.join(__dirname, '../temp')));
 
 // Serve static files for dashboard
 app.use(express.static(path.join(__dirname, '../public')));
